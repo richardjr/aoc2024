@@ -31,6 +31,24 @@ PRINT_STRING:
     call PRINT_CHAR ; Print the character in A.
     jr PRINT_STRING ; Jump back to print the next character.
 
+
+;; Pint an array of 16-bit integers.
+;; HL = address of the array.
+;; B = number of elements in the array.
+PRINT_ARRAY_16:
+    ld a,(hl)       ; Load the low byte of the first element into A.
+    ld d,a        ; Copy the low byte to DE.
+    inc hl          ; Increment HL to point to the high byte.
+    ld a,(hl)       ; Load the high byte of the first element into A.
+    ld e,a        ; Copy the low byte to DE.
+    call $2033
+    inc hl          ; Increment HL to point to the high byte.
+    dec b           ; Decrement B.
+    ld a,b          ; Copy B to A.
+    cp 0            ; Set the zero flag if B is zero.
+    ret z           ; Return if B is zero.
+    jr PRINT_ARRAY_16
+
 ;; Load A with the ASCII code of the character to print and call PRINT_CHAR.
 
 PRINT_CHAR:
