@@ -37,3 +37,13 @@ def formatDoubleArray(data):
             array_data.append(new_array)
 
     return array_data
+
+def makeArray(data):
+    ret_data=[]
+    lines=data.split("\n")
+    for line in lines:
+        line_array=[]
+        for char in line:
+            line_array.append(char)
+        ret_data.append(line_array)
+    return ret_data

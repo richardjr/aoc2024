@@ -1,18 +1,8 @@
-import re
 from aocd import get_data
 from aocd import submit
+from libs.python.formatters import makeArray
 data = get_data(day=4, year=2024)
 #data="MMMSXXMASM\nMSAMXMSMSA\nAMXSXMAAMM\nMSAMASMSMX\nXMASAMXAMM\nXXAMMXXAMA\nSMSMSASXSS\nSAXAMASAAA\nMAMMMXMMMM\nMXMXAXMASX"
-
-def makeArray(data):
-    ret_data=[]
-    lines=data.split("\n")
-    for line in lines:
-        line_array=[]
-        for char in line:
-            line_array.append(char)
-        ret_data.append(line_array)
-    return ret_data
 
 puzzle_array=makeArray(data)
 print(puzzle_array)
