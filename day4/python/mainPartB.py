@@ -1,12 +1,12 @@
 from aocd import get_data
 from aocd import submit
 from libs.python.formatters import makeArray
+from tqdm import tqdm
 
 data = get_data(day=4, year=2024) #1854
 #data="MMMSXXMASM\nMSAMXMSMSA\nAMXSXMAAMM\nMSAMASMSMX\nXMASAMXAMM\nXXAMMXXAMA\nSMSMSASXSS\nSAXAMASAAA\nMAMMMXMMMM\nMXMXAXMASX" #9
 
 puzzle_array=makeArray(data)
-print(puzzle_array)
 x_bounds = len(puzzle_array[0])
 y_bounds = len(puzzle_array)
 
@@ -32,17 +32,14 @@ def getDirectionString(x, y, direction):
     return direction_string
 
 total = 0
-for y in range(y_bounds):
+for y in tqdm(range(y_bounds)):
     for x in range(x_bounds):
         char=getChar(x, y)
         if char == 'M' or char == 'S':
-            print(f"Checking {x}, {y}")
             direction_string = getDirectionString(x, y, 0)
             if direction_string=="MAS" or direction_string=="SAM":
-                print(f"Direction string one: {direction_string}")
                 direction_string = getDirectionString(x+2, y, 1)
                 if direction_string=="MAS" or direction_string=="SAM":
-                    print(f"Direction string two: {direction_string}")
                     total += 1
 
 
