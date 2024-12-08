@@ -3,8 +3,8 @@ from aocd import get_data
 from aocd import submit
 from tqdm import tqdm
 
-#data = get_data(day=8, year=2024) #1854
-data = "............\n........0...\n.....0......\n.......0....\n....0.......\n......A.....\n............\n............\n........A...\n.........A..\n............\n............"
+data = get_data(day=8, year=2024) #1854
+#data = "............\n........0...\n.....0......\n.......0....\n....0.......\n......A.....\n............\n............\n........A...\n.........A..\n............\n............"
 
 lines = data.split("\n")
 
@@ -51,29 +51,35 @@ unique_nodes=0
 total_nodes=0
 
 for node_type in node_types:
-        for i in range(len(node_types[node_type])):
-            for j in range(len(node_types[node_type])):
-                if i != j:
-                    x1, y1 = node_types[node_type][i]
-                    x2, y2 = node_types[node_type][j]
-                    # delta
-                    dx = x2 - x1
-                    dy = y2 - y1
-                    # distance
-                    d = (dx*dx + dy*dy)**0.5
-                    print(f"Distance between {node_type} and {node_type} is {d}")
-                    print("Delta", dx, dy)
-                    # plot point 2x distance away from origin node (I think) or do we distance away from the second node?
-                    x3 = x2 + dx
-                    y3 = y2 + dy
+    for i in range(len(node_types[node_type])):
+        for j in range(len(node_types[node_type])):
+            if i != j:
+                x1, y1 = node_types[node_type][i]
+                x2, y2 = node_types[node_type][j]
+                # delta
+                dx = x2 - x1
+                dy = y2 - y1
+                # distance
+                d = (dx*dx + dy*dy)**0.5
+                print(f"Distance between {node_type} and {node_type} is {d}")
+                print("Delta", dx, dy)
+                # plot point 2x distance away from origin node (I think) or do we distance away from the second node?
+                while True:
+                    x3 = x1 + dx
+                    y3 = y1 + dy
                     print(f"Plotting point {x3}, {y3}")
                     char = peek(x3, y3)
                     if char == ".":
                         poke(x3, y3, "#")
                         unique_nodes += 1
                         total_nodes += 1
+                    elif char == None:
+                        print("out of bounds")
+                        break
                     else:
                         total_nodes += 1
+                    y1=y3
+                    x1=x3
 
 print(grid)
 print(f"Unique nodes: {unique_nodes}")
