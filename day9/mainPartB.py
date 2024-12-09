@@ -3,20 +3,25 @@ from aocd import get_data
 from aocd import submit
 from tqdm import tqdm
 
-#data = get_data(day=9, year=2024) #1854
-data = "2333133121414131402"
+data = get_data(day=9, year=2024) #1854
+#data = "2333133121414131402"
 
 disk = []
 files = {}
+ordered_files = []
+
 
 def make_map(data):
     global disk
+    global files
+    global ordered_files
     file_toggle=True
     postion=0
     for i in range(len(data)):
         amount=int(data[i])
         if file_toggle:
-            files[postion] = amount
+            files[postion] = {"size":amount, "location":len(disk), "moved":False}
+            ordered_files.insert(0,postion)
         for j in range(amount):
             if file_toggle:
                 disk.append(str(postion))
@@ -27,59 +32,48 @@ def make_map(data):
         file_toggle = not file_toggle
 
 make_map(data)
-print(disk)
-print(files)
+ordered_files.pop()
 
-read_ptr=len(disk)-1
+#print(disk)
+#print(files)
+#print(ordered_files)
 
-for write_ptr in range(len(disk)):
-    print("At write_ptr", write_ptr, "disk[write_ptr]", disk[write_ptr])
-    if disk[write_ptr] == ".":
-        size=1
-        max_size = len(disk)-write_ptr
-        if max_size > 9:
-            max_size = 9
-        for i in range(1, max_size):
-            if disk[write_ptr+i] == ".":
+
+def peek(x):
+    if x < 0 or x >= len(disk):
+        return None
+    return disk[x]
+
+def write_file(file_id, location):
+    size=files[file_id]["size"]
+    for i in range(0,size):
+        disk[location+i] = str(file_id)
+
+def rm_file(file_id):
+    size=files[file_id]["size"]
+    location=files[file_id]["location"]
+    for i in range(size):
+        disk[location+i] = "."
+
+for file in ordered_files:
+    for write_ptr in range(0,len(disk)):
+        if peek(write_ptr) == ".":
+            size = 1
+            while peek(write_ptr+size) == ".":
                 size+=1
-            else:
-                break
-        if write_ptr+size >= len(disk):
-            size = len(disk)-write_ptr
-        print("size", size)
-        moved=False
-        loops=0
-        while not moved:
-            if read_ptr <= write_ptr:
-                read_ptr=len(disk)-1
-                loops+=1
-                print("read point reset")
-                if loops>2:
-                    print("loops", loops)
-                    break
-            while disk[read_ptr] == ".":
-                if read_ptr <= write_ptr:
-                    read_ptr=len(disk)-1
-                    loops+=1
-                    print("read point reset")
-                    if loops>2:
-                        print("loops", loops)
-                        break
-            file_id=int(disk[read_ptr])
-            #print(file_id)
-            if files[file_id] <= size:
-                print("file_id", file_id, "size", size, "files[file_id]", files[file_id])
-                for i in range(0,files[file_id]):
-                    disk[write_ptr+i] = str(file_id)
-                    disk[read_ptr-i] = "."
-                read_ptr-=(size-1)
-                print("moved")
-                moved=True
-            else:
-                print("read_ptr", read_ptr, "file_id", file_id, "files[file_id]", files[file_id], "size", size)
-            read_ptr-=1
 
-    #read_ptr=len(disk)-1
+            #print("gap size", size, " at ", write_ptr)
+            # will it fit?
+            if write_ptr >= files[file]["location"]:
+                print("too far on file", file)
+                break
+            if files[file]["size"] <= size:
+                rm_file(file)
+                write_file(file, write_ptr)
+                #print(f"Moved file {file} to location {write_ptr}")
+                files[file]["moved"]=True
+                #print(disk)
+                break
 
 total = 0
 for i in range(len(disk)):
@@ -88,5 +82,5 @@ for i in range(len(disk)):
 
 
 print(disk)
-print(total)
-#submit(total, part="b", day=9, year=2024)
+print(total) # 6415666502672 to high
+#submit(total, part="a", day=9, year=2024)
