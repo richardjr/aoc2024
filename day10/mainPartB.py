@@ -39,36 +39,28 @@ def peek(x,y):
         return None
     return map[y][x]
 
-def flood(start_x, start_y):
+visited = {}
 
-    start_h = peek(start_x, start_y)
-    if start_h != 0:
+def count_paths(x, y):
+    if (x, y) in visited:
+        return visited[(x, y)]
+
+    char = peek(x, y)
+    if char is None:
         return 0
+    if char == 9:
+        visited[(x, y)] = 1
+        return 1
 
-    visited = set()
-    queue = deque()
-    queue.append((start_x, start_y))
-    visited.add((start_x, start_y))
+    total_paths = 0
+    for dx, dy in directions:
+        nx, ny = x + dx, y + dy
+        nh = peek(nx, ny)
+        if nh == char + 1:
+            total_paths += count_paths(nx, ny)
 
-    trail_ends = set()
-
-    while queue:
-        x, y = queue.popleft()
-        current_h = peek(x, y)
-
-        # If we've reached height 9, record it
-        if current_h == 9:
-            trail_ends.add((x, y))
-
-        # Are they in height range?
-        for dx, dy in directions:
-            nx, ny = x+dx, y+dy
-            nh = peek(nx, ny)
-            if nh == current_h + 1 and (nx, ny) not in visited:
-                visited.add((nx, ny))
-                queue.append((nx, ny))
-
-    return len(trail_ends)
+    visited[(x, y)] = total_paths
+    return total_paths
 
 make_map()
 print(map)
@@ -77,8 +69,7 @@ print(trailheads)
 
 total_score = 0
 for (x, y) in trailheads:
-    score = flood(x, y)
-    total_score += score
+    total_score += count_paths(x, y)
 
 print("Sum of all trailhead scores:", total_score)
 
